@@ -482,15 +482,16 @@ h1,h2,h3{font-family:var(--font-display); margin:0;}
 
   function computeSaldo(){
     const totalTopup = state.topup.reduce((s,t)=>s+(Number(t.nominal)||0),0);
+    const totalPengeluaran = state.pengeluaran.reduce((s,p)=>s+(Number(p.nominal)||0),0);
     const totalRembes = state.pengeluaran.filter(p=>p.status==='sudah_rembes').reduce((s,p)=>s+(Number(p.nominal)||0),0);
     const totalBelumRembes = state.pengeluaran.filter(p=>p.status!=='sudah_rembes').reduce((s,p)=>s+(Number(p.nominal)||0),0);
-    return { totalTopup, totalRembes, totalBelumRembes, saldo: totalTopup - totalRembes };
+    return { totalTopup, totalPengeluaran, totalRembes, totalBelumRembes, saldo: totalTopup - totalPengeluaran };
   }
 
   function renderStats(){
     const s = computeSaldo();
     document.getElementById('statsRow').innerHTML = `
-      <div class="stat-card stat-main"><div class="stat-label">Saldo Kas Saat Ini</div><div class="stat-value">${fmtRupiah(s.saldo)}</div></div>
+      <div class="stat-card stat-main"><div class="stat-label">Saldo</div><div class="stat-value">${fmtRupiah(s.saldo)}</div></div>
       <div class="stat-card"><div class="stat-label">Belum Rembes (Outstanding)</div><div class="stat-value stat-warn">${fmtRupiah(s.totalBelumRembes)}</div></div>
       <div class="stat-card"><div class="stat-label">Total Top Up Kas</div><div class="stat-value stat-muted">${fmtRupiah(s.totalTopup)}</div></div>`;
   }
