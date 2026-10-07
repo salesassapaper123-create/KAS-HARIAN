@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Kas Harian Supir</title>
+<link rel="manifest" href="./manifest-kas.json">
+<meta name="theme-color" content="#2458E6">
+<link rel="apple-touch-icon" href="./kasicon192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -621,8 +624,8 @@ h1,h2,h3{font-family:var(--font-display); margin:0;}
 
     const byNopol = {};
     rows.forEach(r=>{
-      const key = r.nopol+'||'+r.namaSupir;
-      if(!byNopol[key]) byNopol[key] = {nopol:r.nopol, namaSupir:r.namaSupir, jumlah:0, total:0};
+      const key = r.nopol+'||'+r.namaSupir+'||'+r.rute;
+      if(!byNopol[key]) byNopol[key] = {nopol:r.nopol, namaSupir:r.namaSupir, rute:r.rute, jumlah:0, total:0};
       byNopol[key].jumlah++;
       byNopol[key].total += Number(r.nominal)||0;
     });
@@ -646,10 +649,10 @@ h1,h2,h3{font-family:var(--font-display); margin:0;}
         <h3>Per Kendaraan / Supir</h3>
         <div class="table-wrap">
           <table class="data-table">
-            <thead><tr><th>Nopol</th><th>Nama Supir</th><th class="num">Jumlah Transaksi</th><th class="num">Total Nominal</th></tr></thead>
+            <thead><tr><th>Nopol</th><th>Nama Supir</th><th>Rute</th><th class="num">Jumlah Transaksi</th><th class="num">Total Nominal</th></tr></thead>
             <tbody>
-              ${breakdown.length===0 ? `<tr><td colspan="4" class="hint" style="text-align:center;">Tidak ada data di periode ini.</td></tr>` : breakdown.map(b=>`
-              <tr><td>${esc(b.nopol)}</td><td>${esc(b.namaSupir)}</td><td class="num">${b.jumlah}</td><td class="num">${fmtRupiah(b.total)}</td></tr>`).join('')}
+              ${breakdown.length===0 ? `<tr><td colspan="5" class="hint" style="text-align:center;">Tidak ada data di periode ini.</td></tr>` : breakdown.map(b=>`
+              <tr><td>${esc(b.nopol)}</td><td>${esc(b.namaSupir)}</td><td>${esc(b.rute)}</td><td class="num">${b.jumlah}</td><td class="num">${fmtRupiah(b.total)}</td></tr>`).join('')}
             </tbody>
           </table>
         </div>
@@ -952,6 +955,14 @@ h1,h2,h3{font-family:var(--font-display); margin:0;}
       if(statusEl) statusEl.textContent = '';
       toast('Gagal membuat file Excel. Coba lagi.', 'danger');
     }
+  }
+
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('./kasserviceworker.js').catch(function(err){
+        console.warn('Service worker gagal didaftarkan:', err);
+      });
+    });
   }
 })();
 </script>
